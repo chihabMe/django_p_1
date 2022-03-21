@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<form method='get' action='{% url "blog:post_search" %}'>
+    <input name='q' type='text' />
+    <button class='btn btn-success'>search</button>
+
+</form>
+
+{% if query %}
+<h4>searching on <strong>{{query}}</strong></h4>
+{% with posts.count as total %}
+<h6>found {{total}} match{{total|pluralize}}</h6>
+{% endwith %}
+{% endif %}
+<ul>
+
+    {% for post in posts  %}
+<li>
+    <h6>posts {{forloop.counter}}<h6>
+    <a href={{post.get_absolute_url}}>{{post.title}}</a>
+</li>
+<h8>
+    Taggs : 
+    {% for tag in post.tags.all %}
+    <a href="{% url 'blog:post_by_slug' tag.slug %} ">{{tag.name}}</a>
+    {% if not forloop.last %} , {% endif %}
+    {% endfor %}
+</h8>
+{% empty %}
+    <h3> there is no posts to show</h3>
+{% endfor  %}
+</br></br></br></br></br></br></br>
+{% if page_obj %}
+
+<h1>you are using class based view</h1>
+
+{% include './pagination.html' with page=page_obj %}
+{% else %}
+<h1>you are using function based view</h1>
+
+{% include './pagination.html' with page=posts %}
+{% endif %}
+</ul>
+{% endblock content %}

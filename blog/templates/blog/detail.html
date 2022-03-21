@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load blog_tags %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{post.title}}{% endblock title %}
+{% block content %}
+{{post.title |linebreaks}}
+<p>
+    {% comment %}
+    {{post.body|markdown}}
+    {% endcomment %} 
+    {{post.body |allFirstToCapital}}
+</p>
+published on {{post.publish}} by {{post.author}} 
+</br>
+<a  href="{% url 'blog:post_share' post.id %}" class="btn btn-default_if_none">share this post</a>
+    
+    {% with comments.count as total_comments %}
+    
+    <h2>
+    
+        {{total_comments}} comment{{total_comments|pluralize}}
+    </h2>
+    
+    {% endwith %}
+    <form method='post' >
+ 
+        {%  crispy   comment_form     %}
+        <input class='btn btn-success' type='submit' value='comment' />
+
+    </form>
+    {% if new_comment %}
+        <h2>you comment has been saved successfully</h2>
+    {% else %}
+    <h4>let us know want your think about this ! </h4>
+
+    {% endif %}
+    <div class='comments'>
+        {%  for comment in comments %}
+        <div>
+
+            <h3> comment {{forloop.counter}} by {{comment.user.username}}</h3>
+            <h4>title : {{comment.title}}</h4>
+            <p>
+                {{comment.body|linebreaks}}
+            </p>
+            {% empty %}
+            <h2>there is no comment<h2>
+        </div>
+
+        {% endfor  %}
+    </div>
+    <div class='similar__posts'>
+        <h3>your also may like  </h3>
+        {% for post in similar_posts %}
+        <div class='similar__post'>
+            <a href='{{post.get_absolute_url}}'>{{post.title}}</a>
+
+        </div>
+        {%  empty %}
+        <h4> we don't have anything to recommend yet </h4>
+        {% endfor %}
+    </div>
+{% endblock content %}
